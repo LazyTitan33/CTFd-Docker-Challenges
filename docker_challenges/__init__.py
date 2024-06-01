@@ -253,20 +253,21 @@ def get_client_cert(docker):
     return CERT
 
 
-# For the Docker Config Page. Gets the Current Repositories available on the Docker Server.
+# Fixed this function so that it will take my repos.
 def get_repositories(docker, tags=False, repos=False):
     r = do_request(docker, '/images/json?all=1')
     result = list()
     for i in r.json():
-        if not i['RepoTags'] == None:
-            if not i['RepoTags'][0].split(':')[0] == '<none>':
-                if repos:
-                    if not i['RepoTags'][0].split(':')[0] in repos:
-                        continue
-                if not tags:
-                    result.append(i['RepoTags'][0].split(':')[0])
-                else:
-                    result.append(i['RepoTags'][0])
+        if i.get('RepoTags'):  # Check if 'RepoTags' is not empty
+            if i['RepoTags']:  # Check if 'RepoTags' list is not empty
+                if not i['RepoTags'][0].split(':')[0] == '<none>':
+                    if repos:
+                        if not i['RepoTags'][0].split(':')[0] in repos:
+                            continue
+                    if not tags:
+                        result.append(i['RepoTags'][0].split(':')[0])
+                    else:
+                        result.append(i['RepoTags'][0])
     return list(set(result))
 
 
