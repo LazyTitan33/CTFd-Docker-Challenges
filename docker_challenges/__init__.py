@@ -283,8 +283,12 @@ def get_unavailable_ports(docker):
 
 def get_required_ports(docker, image):
     r = do_request(docker, f'/images/{image}/json?all=1')
-    result = r.json()['ContainerConfig']['ExposedPorts'].keys()
+    try:
+        result = r.json()['Config']['ExposedPorts'].keys()
+    except KeyError:
+        result = []
     return result
+
 
 
 def create_container(docker, image, team, portbl):
